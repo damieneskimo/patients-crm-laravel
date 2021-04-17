@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -50,7 +51,12 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         if (! $user->isAdmin()) {
-            return response()->noContent(403);
+            // if not admin user then, kick out and return forbidden error
+            Auth::logout();
+
+            return response()->json([
+                'error' => 'Sorry only admin can access!'
+            ], 403);
         }
     }
 }
