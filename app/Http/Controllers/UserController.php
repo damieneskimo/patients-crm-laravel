@@ -33,15 +33,15 @@ class UserController extends Controller
         return new UserResource($patient);
     }
 
-    public function update(Request $request, User $patient)
+    public function update(Request $request, $patient)
     {
         $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|unique:users',
-            'gender' => 'required',
+            'name' => 'sometimes|required',
+            'email' => 'sometimes|required|unique:users',
         ]);
 
-        $patient = User::where('id', $patient->id)->update($request->all());
+        User::where('id', $patient)->update($request->all());
+        $patient = User::find($patient);
 
         return new UserResource($patient);
     }
