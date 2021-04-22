@@ -27,7 +27,6 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'mobile' => $this->mobile,
             'gender' => $this->gender,
-            'notes' => NoteResource::collection($this->notes)
         ];
     }
 }
