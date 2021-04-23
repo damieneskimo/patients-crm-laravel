@@ -12,7 +12,6 @@ class NoteResource extends JsonResource
         $this->withoutWrapping();
     }
 
-
     /**
      * Transform the resource into an array.
      *
@@ -24,7 +23,7 @@ class NoteResource extends JsonResource
         return [
             'id' => $this->id,
             'content' => $this->content,
-            'created_at' => $this->created_at->toDateTimeString()
+            'created_at' => $this->created_at->toDateTimeString(),
         ];
     }
 }

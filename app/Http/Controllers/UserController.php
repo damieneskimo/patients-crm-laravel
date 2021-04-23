@@ -10,7 +10,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $patients = User::patients()->with('notes')->get();
+        $patients = User::patients()->with('notes')->paginate();
 
         return UserResource::collection($patients);
     }

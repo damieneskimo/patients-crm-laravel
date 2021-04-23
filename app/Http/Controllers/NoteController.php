@@ -16,7 +16,12 @@ class NoteController extends Controller
      */
     public function index(User $patient)
     {
-        return NoteResource::collection($patient->notes);
+        return NoteResource::collection($patient->notes)
+            ->additional([
+                'meta' => [
+                    'patient_name' => $patient->name
+                ]
+            ]);
     }
 
     /**
