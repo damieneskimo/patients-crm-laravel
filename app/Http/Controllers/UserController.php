@@ -10,7 +10,14 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $patients = User::patients()->with('notes')->paginate();
+        $keywords = $request->keywords;
+
+        $patients = User::patients()
+            ->when($keywords, function ($query, $keywords) {
+                $query->where('name', 'like', "%$keywords%")
+                    ->orWhere('email', 'like', "%$keywords%");
+            })
+            ->paginate();
 
         return UserResource::collection($patients);
     }
