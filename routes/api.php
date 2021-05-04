@@ -17,9 +17,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group([ 'middleware' => ['auth:sanctum'] ], function() {
+Route::post('/token', [ UserController::class, 'generateUserToken']);
 
+Route::group([ 'middleware' => ['auth:sanctum'] ], function() {
     Route::apiResource('/patients', UserController::class);
 
     Route::apiResource('/patients/{patient}/notes', NoteController::class);
+
+    Route::get('/user', [ UserController::class, 'getAuthUser']);
+
+    Route::post('/logout', [ UserController::class, 'logout' ]);
 });
