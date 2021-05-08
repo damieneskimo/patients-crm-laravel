@@ -36,6 +36,11 @@ class NoteTest extends TestCase
             ->assertJsonStructure([
                 'data', 'meta'
             ])
+            ->assertJsonFragment([
+                'meta' => [
+                    'patient_name' => $this->patient->name
+                ]
+            ])
             ->assertJson(function (AssertableJson $json) {
                 $json->has('meta', 1)
                     ->has('data.0', function(AssertableJson $item) {
