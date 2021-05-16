@@ -14,14 +14,11 @@ class NoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $patient)
+    public function index(Request $request, User $patient)
     {
-        return NoteResource::collection($patient->notes)
-            ->additional([
-                'meta' => [
-                    'patient_name' => $patient->name
-                ]
-            ]);
+        return response()->json([
+            'data' => NoteResource::collection($patient->notes)->toArray($request)
+        ]);
     }
 
     /**

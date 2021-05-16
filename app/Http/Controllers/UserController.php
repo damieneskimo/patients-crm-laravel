@@ -21,7 +21,7 @@ class UserController extends Controller
             })
             ->paginate();
 
-        return UserResource::collection($patients);
+        return UserResource::collection($patients)->response()->getData(true);
     }
 
     public function show(Request $request, User $patient)
