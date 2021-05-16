@@ -20,6 +20,14 @@ class NoteTest extends TestCase
         $this->patient = User::patients()->orderBy('id', 'desc')->first();
     }
 
+    public function test_cannot_create_if_validation_fails()
+    {
+        $data = ['content' => ''];
+        $this->postJson('/api/patients/' . $this->patient->id . '/notes', $data)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('content');
+    }
+
     public function test_can_create_note()
     {
         $this->postJson('/api/patients/' . $this->patient->id . '/notes', [
@@ -33,17 +41,8 @@ class NoteTest extends TestCase
     {
         $this->getJson('/api/patients/' . $this->patient->id . '/notes')
             ->assertOk()
-            ->assertJsonStructure([
-                'data', 'meta'
-            ])
-            ->assertJsonFragment([
-                'meta' => [
-                    'patient_name' => $this->patient->name
-                ]
-            ])
             ->assertJson(function (AssertableJson $json) {
-                $json->has('meta', 1)
-                    ->has('data.0', function(AssertableJson $item) {
+                $json->has('data.0', function(AssertableJson $item) {
                         $item->whereAllType([
                             'id' => 'integer',
                             'content' => 'string',

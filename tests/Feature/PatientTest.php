@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -17,17 +19,53 @@ class PatientTest extends TestCase
         $this->actingAs($this->admin);
     }
 
+    public function test_validate_data_before_create_patient()
+    {
+        $data = [];
+        $this->postJson(route('patients.store'), $data)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['name', 'email', 'gender']);
+
+        $data = [
+            'name' => 'john doe',
+            'email' => 'johndorandom',
+        ];
+        $this->postJson(route('patients.store'), $data)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(
+                ['email', 'gender']
+            )->assertJsonMissingValidationErrors('name');
+
+        $data = [
+            'name' => 'john doe',
+            'email' => 'someunique@gmail.com',
+            'gender' => 'something wrong'
+        ];
+        $this->postJson(route('patients.store'), $data)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(
+                ['gender']
+            )->assertJsonMissingValidationErrors(['name', 'email']);
+    }
+
     public function test_can_create_patient()
     {
         $this->withoutExceptionHandling();
+
+        // Storage::fake('profiles');
+        // $file = UploadedFile::fake()->image('profile.jpg', 300, 300);
+
         $data = [
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
-            'gender' => 'male'
+            'gender' => 'male',
+            // 'profile_photo' => $file,
         ];
 
         $response = $this->handleValidationExceptions()
             ->postJson(route('patients.store'), $data);
+
+        // Storage::disk('profiles')->assertExists($file->hashName());
 
         $response->assertJsonMissingValidationErrors()
                 ->assertCreated()
