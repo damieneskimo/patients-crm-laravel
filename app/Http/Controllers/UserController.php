@@ -21,12 +21,18 @@ class UserController extends Controller
             })
             ->paginate();
 
-        return UserResource::collection($patients)->response()->getData(true);
+        return response()->json(
+            UserResource::collection($patients)->response()->getData(true)
+        );
     }
 
     public function show(Request $request, User $patient)
     {
-        return new UserResource($patient);
+        $resource = new UserResource($patient);
+
+        return response()->json(
+            $resource->response()->getData(true),
+        );
     }
 
     public function store(Request $request)
@@ -42,8 +48,12 @@ class UserController extends Controller
         }
 
         $patient = User::create($data);
+        $resource = new UserResource($patient);
 
-        return new UserResource($patient);
+        return response()->json(
+            $resource->response()->getData(true),
+            201
+        );
     }
 
     public function update(Request $request, $patient)
@@ -54,11 +64,17 @@ class UserController extends Controller
             $rules['email'] = 'sometimes|required|email|unique:users';
         }
 
-        $this->validate($request, $rules);
+        $data = $this->validate($request, $rules);
+        if ($request->filled('mobile')) {
+            $data['mobile'] = $request->mobile;
+        }
 
-        $patient->update($request->all());
+        $patient->update($data);
+        $resource = new UserResource($patient);
 
-        return new UserResource($patient);
+        return response()->json(
+            $resource->response()->getData(true)
+        );
     }
 
     public function destroy(Request $request, User $patient)
@@ -67,6 +83,10 @@ class UserController extends Controller
 
         return response()->noContent();
     }
+
+    /**
+     * Methods that are specifically for mobile app
+     */
 
     public function getAuthUser(Request $request)
     {
@@ -77,7 +97,7 @@ class UserController extends Controller
     {
         $request->user()->tokens()->delete();
 
-        return response('Loggedout', 200);
+        return response('Logged out', 200);
     }
 
     public function generateUserToken(Request $request)

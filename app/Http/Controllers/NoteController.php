@@ -29,47 +29,18 @@ class NoteController extends Controller
      */
     public function store(Request $request, User $patient)
     {
-        $this->validate($request, [
+        $data = $this->validate($request, [
             'content' => 'required'
         ]);
 
-        $input = $request->all();
-        $input['user_id'] = $patient->id;
+        $data['user_id'] = $patient->id;
 
-        $note = Note::create($input);
+        $note = Note::create($data);
+        $resource = new NoteResource($note);
 
-        return new NoteResource($note);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Note $note
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $patient, Note $note)
-    {
-        $this->validate($request, [
-            'content' => 'required'
-        ]);
-
-        $input = $request->all();
-
-        $note = Note::where('id', $note->id)->update($input);
-
-        return new NoteResource($note);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return response()->json(
+            $resource->response()->getData(true),
+            201
+        );
     }
 }

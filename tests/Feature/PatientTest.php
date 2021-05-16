@@ -72,6 +72,20 @@ class PatientTest extends TestCase
                 ->assertJson($data);
     }
 
+    public function test_can_show_a_patient()
+    {
+        $patient = User::factory()->create([
+            'name' => 'test patient',
+            'email' => 'test.patient@gmail.com'
+        ]);
+        $this->getJson('/api/patients/' . $patient->id)
+            ->assertOk()
+            ->assertJson([
+                'name' => 'test patient',
+                'email' => 'test.patient@gmail.com'
+            ]);
+    }
+
     public function test_can_get_patients_paginated_list()
     {
         $this->getJson('/api/patients')
@@ -109,13 +123,13 @@ class PatientTest extends TestCase
         $patient = User::patients()->first();
         $this->putJson('/api/patients/' . $patient->id, [
                 'name' => 'updated username',
-                'mobile' => '12345'
+                'mobile' => '666666'
             ])
             ->assertOk()
             ->assertJson(function (AssertableJson $json) use ($patient) {
                 $json->where('id', $patient->id)
                     ->where('name', 'updated username')
-                    ->where('mobile', '12345')
+                    ->where('mobile', '666666')
                     ->missing('password')
                     ->etc();
             });
