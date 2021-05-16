@@ -31,13 +31,17 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $data = $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|unique:users',
-            'gender' => 'required',
+            'email' => 'required|email|unique:users',
+            'gender' => 'required|in:' . join(',', User::GENDERS),
         ]);
 
-        $patient = User::create($request->all());
+        if ($request->filled('mobile')) {
+            $data['mobile'] = $request->mobile;
+        }
+
+        $patient = User::create($data);
 
         return new UserResource($patient);
     }

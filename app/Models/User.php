@@ -13,6 +13,8 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
 
+    const GENDERS = ['male', 'female', 'rather not say'];
+
     /**
      * The attributes that are mass assignable.
      *
