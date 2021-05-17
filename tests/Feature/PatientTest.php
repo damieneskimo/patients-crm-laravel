@@ -16,6 +16,13 @@ class PatientTest extends TestCase
     protected function setUp(): void {
         parent::setUp();
 
+        $this->admin = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+            'is_admin' => 1
+        ]);
         $this->actingAs($this->admin);
     }
 
@@ -91,6 +98,8 @@ class PatientTest extends TestCase
 
     public function test_can_get_patients_paginated_list()
     {
+        $patients = User::factory(20)->create(['profile_photo' => null]);
+
         $this->getJson('/api/patients')
             ->assertOk()
             ->assertJson(function (AssertableJson $json) {
@@ -123,7 +132,10 @@ class PatientTest extends TestCase
 
     public function test_can_update_a_patient()
     {
-        $patient = User::patients()->first();
+        $patient = User::factory()->create([
+            'name' => 'John Doe',
+            'email' => 'john.doe@gmail.com'
+        ]);
         $this->putJson('/api/patients/' . $patient->id, [
                 'name' => 'updated username',
                 'mobile' => '666666'

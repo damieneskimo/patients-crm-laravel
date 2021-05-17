@@ -15,9 +15,5 @@ abstract class TestCase extends BaseTestCase
 
     protected function setUp(): void {
         parent::setUp();
-
-        Artisan::call('db:seed');
-
-        $this->admin = User::where('email', 'admin@gmail.com')->first();
     }
 }
