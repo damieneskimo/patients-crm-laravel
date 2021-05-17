@@ -26,7 +26,8 @@ class UserFactory extends Factory
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'mobile' => $this->faker->phoneNumber,
-            'gender' => $this->faker->randomElement(['male', 'female'])
+            'gender' => $this->faker->randomElement(['male', 'female']),
+            'profile_photo' => $this->faker->image(storage_path('app/profiles'), 300, 300)
         ];
     }
 

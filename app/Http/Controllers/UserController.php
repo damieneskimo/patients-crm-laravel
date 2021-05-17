@@ -6,6 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
@@ -45,6 +46,11 @@ class UserController extends Controller
 
         if ($request->filled('mobile')) {
             $data['mobile'] = $request->mobile;
+        }
+        if ($request->hasFile('profile_photo')) {
+            $file = $request->file('profile_photo');
+            $path = Storage::disk('profiles')->putFile('', $file);
+            $data['profile_photo'] = $file->hashName();
         }
 
         $patient = User::create($data);
