@@ -16,9 +16,19 @@ class NoteTest extends TestCase
     protected function setUp(): void {
         parent::setUp();
 
+        $this->admin = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+            'is_admin' => 1
+        ]);
         $this->actingAs($this->admin);
 
-        $this->patient = User::patients()->orderBy('id', 'desc')->first();
+        $this->patient = User::create([
+            'name' => 'patient',
+            'email' => 'patient@gmail.com'
+        ]);
     }
 
     public function test_cannot_create_if_validation_fails()
@@ -40,6 +50,8 @@ class NoteTest extends TestCase
 
     public function test_can_get_all_notes()
     {
+        $notes = Note::factory(3)->create(['user_id' => $this->patient->id]);
+
         $this->getJson('/api/patients/' . $this->patient->id . '/notes')
             ->assertOk()
             ->assertJson(function (AssertableJson $json) {
