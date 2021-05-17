@@ -52,20 +52,23 @@ class PatientTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        // Storage::fake('profiles');
-        // $file = UploadedFile::fake()->image('profile.jpg', 300, 300);
+        Storage::fake(storage_path('app/profiles'));
+        $file = UploadedFile::fake()->image('profile.jpg', 300, 300);
 
         $data = [
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'gender' => 'male',
-            // 'profile_photo' => $file,
+            'profile_photo' => $file,
         ];
 
         $response = $this->handleValidationExceptions()
             ->postJson(route('patients.store'), $data);
 
-        // Storage::disk('profiles')->assertExists($file->hashName());
+        Storage::disk('profiles')->assertExists($file->hashName());
+
+        //replace file content with file url
+        $data['profile_photo'] = Storage::disk('profiles')->url($file->hashName());
 
         $response->assertJsonMissingValidationErrors()
                 ->assertCreated()
