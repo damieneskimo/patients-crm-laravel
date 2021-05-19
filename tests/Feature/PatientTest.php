@@ -31,7 +31,15 @@ class PatientTest extends TestCase
         $data = [];
         $this->postJson(route('patients.store'), $data)
             ->assertStatus(422)
-            ->assertJsonValidationErrors(['name', 'email', 'gender']);
+            ->assertJson(function (AssertableJson $json) use ($data) {
+                $json->has('message')
+                    ->has('errors', 3)
+                    ->whereAllType([
+                        'errors.name' => 'array',
+                        'errors.email' => 'array',
+                        'errors.gender' => 'array'
+                    ]);
+            });
 
         $data = [
             'name' => 'john doe',
@@ -72,6 +80,11 @@ class PatientTest extends TestCase
         $response = $this->handleValidationExceptions()
             ->postJson(route('patients.store'), $data);
 
+        //assert db record
+        $this->assertDatabaseHas('users', [
+            'email' => $data['email']
+        ])->assertDatabaseCount('users', 2);
+
         Storage::disk('profiles')->assertExists($file->hashName());
 
         //replace file content with file url
@@ -98,14 +111,14 @@ class PatientTest extends TestCase
 
     public function test_can_get_patients_paginated_list()
     {
-        $patients = User::factory(20)->create(['profile_photo' => null]);
+        $patients = User::factory(3)->create(['profile_photo' => null]);
 
         $this->getJson('/api/patients')
             ->assertOk()
             ->assertJson(function (AssertableJson $json) {
                 $json->has('meta')
                     ->has('links')
-                    ->has('data', 15, function ($json) {
+                    ->has('data', 3, function ($json) {
                         $json->whereAllType([
                             'id' => 'integer',
                             'name' => 'string',

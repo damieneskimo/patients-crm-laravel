@@ -75,6 +75,19 @@ class UserController extends Controller
             $data['mobile'] = $request->mobile;
         }
 
+        if ($request->hasFile('profile_photo')) {
+            $file = $request->file('profile_photo');
+            if ($file) {
+                // delete old file
+                if (Storage::disk('profiles')->exists($patient->profile_photo)) {
+                    Storage::disk('profiles')->delete($patient->profile_photo);
+                }
+
+                $path = Storage::disk('profiles')->putFile('', $file);
+                $data['profile_photo'] = $file->hashName();
+            }
+        }
+
         $patient->update($data);
         $resource = new UserResource($patient);
 
