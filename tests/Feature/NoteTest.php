@@ -54,14 +54,9 @@ class NoteTest extends TestCase
 
         $this->getJson('/api/patients/' . $this->patient->id . '/notes')
             ->assertOk()
-            ->assertJson(function (AssertableJson $json) {
-                $json->has('data.0', function(AssertableJson $item) {
-                        $item->whereAllType([
-                            'id' => 'integer',
-                            'content' => 'string',
-                            'created_at' => 'string'
-                        ]);
-                    });
-            });
+            ->assertJsonStructure([
+                ['id', 'content', 'created_at']
+            ])
+            ->assertJsonCount(3);
     }
 }

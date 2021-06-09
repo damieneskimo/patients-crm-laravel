@@ -16,9 +16,9 @@ class NoteController extends Controller
      */
     public function index(Request $request, User $patient)
     {
-        return response()->json([
-            'data' => NoteResource::collection($patient->notes)->toArray($request)
-        ]);
+        return response()->json(
+            resource_data(NoteResource::collection($patient->notes))
+        );
     }
 
     /**
@@ -39,7 +39,7 @@ class NoteController extends Controller
         $resource = new NoteResource($note);
 
         return response()->json(
-            $resource->response()->getData(true),
+            resource_data($resource),
             201
         );
     }

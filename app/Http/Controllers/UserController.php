@@ -14,16 +14,20 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $keywords = $request->keywords;
+        $gender = $request->gender;
 
         $patients = User::patients()
             ->when($keywords, function ($query, $keywords) {
                 $query->where('name', 'like', "%$keywords%")
                     ->orWhere('email', 'like', "%$keywords%");
             })
+            ->when($gender, function ($query, $gender) {
+                $query->where('gender', $gender);
+            })
             ->paginate();
 
         return response()->json(
-            UserResource::collection($patients)->response()->getData(true)
+            resource_data(UserResource::collection($patients))
         );
     }
 
@@ -32,7 +36,7 @@ class UserController extends Controller
         $resource = new UserResource($patient);
 
         return response()->json(
-            $resource->response()->getData(true),
+            resource_data($resource),
         );
     }
 
@@ -57,7 +61,7 @@ class UserController extends Controller
         $resource = new UserResource($patient);
 
         return response()->json(
-            $resource->response()->getData(true),
+            resource_data($resource),
             201
         );
     }
@@ -92,7 +96,7 @@ class UserController extends Controller
         $resource = new UserResource($patient);
 
         return response()->json(
-            $resource->response()->getData(true)
+            resource_data($resource)
         );
     }
 

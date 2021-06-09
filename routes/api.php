@@ -24,7 +24,7 @@ Route::group([ 'middleware' => ['auth:sanctum'] ], function() {
 
     Route::apiResource('/patients/{patient}/notes', NoteController::class);
 
-    Route::get('/user', [ UserController::class, 'getAuthUser']);
+    Route::get('/me', [ UserController::class, 'getAuthUser']);
 
     Route::post('/logout', [ UserController::class, 'logout' ]);
 });
