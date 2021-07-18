@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class UserFactory extends Factory
 {
@@ -25,7 +24,7 @@ class UserFactory extends Factory
         return [
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
-            'mobile' => $this->faker->phoneNumber,
+            'mobile' => $this->faker->numerify('02# #### ####'),
             'gender' => $this->faker->randomElement(['male', 'female']),
             'profile_photo' => basename($this->faker->image(storage_path('app/profiles'), 300, 300))
         ];
