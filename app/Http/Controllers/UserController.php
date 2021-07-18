@@ -26,18 +26,12 @@ class UserController extends Controller
             })
             ->paginate();
 
-        return response()->json(
-            resource_data(UserResource::collection($patients))
-        );
+        return UserResource::collection($patients);
     }
 
     public function show(Request $request, User $patient)
     {
-        $resource = new UserResource($patient);
-
-        return response()->json(
-            resource_data($resource),
-        );
+        return new UserResource($patient);
     }
 
     public function store(Request $request)
@@ -58,10 +52,9 @@ class UserController extends Controller
         }
 
         $patient = User::create($data);
-        $resource = new UserResource($patient);
 
         return response()->json(
-            resource_data($resource),
+            new UserResource($patient),
             201
         );
     }
@@ -93,11 +86,8 @@ class UserController extends Controller
         }
 
         $patient->update($data);
-        $resource = new UserResource($patient);
 
-        return response()->json(
-            resource_data($resource)
-        );
+        return new UserResource($patient);
     }
 
     public function destroy(Request $request, User $patient)
@@ -107,14 +97,14 @@ class UserController extends Controller
         return response()->noContent();
     }
 
-    /**
-     * Methods that are specifically for mobile app
-     */
-
     public function getAuthUser(Request $request)
     {
         return new UserResource($request->user());
     }
+    
+    /**
+     * Methods that are specifically for mobile app
+     */
 
     public function logout(Request $request)
     {
