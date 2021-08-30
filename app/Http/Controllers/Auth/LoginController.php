@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -58,5 +59,7 @@ class LoginController extends Controller
                 'error' => 'Sorry only admin can access!'
             ], 403);
         }
+
+        return new UserResource($user);
     }
 }
